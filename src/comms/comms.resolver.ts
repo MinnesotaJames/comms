@@ -1,17 +1,19 @@
 import { Args, Query, Resolver, ResolveReference } from '@nestjs/graphql';
-import { Comm } from './comms.entity';
+import { Comm, CommConnection } from './comms.entity';
 import { CommsService } from './comms.service';
 
 @Resolver((of) => Comm)
 export class CommsResolver {
   constructor(private commsService: CommsService) {}
 
-  @Query((returns) => [Comm])
-  getCommunications(
+  @Query(returns => CommConnection)
+  async getCommunications(
     @Args('accountIds', { type: () => [Number], nullable: true }) accountIds?: number[],
     @Args('commIds', { type: () => [Number], nullable: true }) commIds?: number[],
-  ): Comm[] {
-    return this.commsService.findAll(accountIds, commIds);
+    @Args('after', { type: () => String, nullable: true }) after?: string,
+    @Args('first', { type: () => Number, nullable: true }) first?: number
+  ): Promise<InstanceType<typeof CommConnection>> {
+    return this.commsService.getCommunications(accountIds, commIds, after, first);
   }
 
   @Query((returns) => Comm)
