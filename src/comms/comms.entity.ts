@@ -1,5 +1,14 @@
-import { Directive, Field, ID, ObjectType } from '@nestjs/graphql';
+import { Directive, Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Paginated } from './paginated';
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+registerEnumType(SortOrder, {
+  name: 'SortOrder',
+});
 
 @ObjectType()
 @Directive('@key(fields: "id")')

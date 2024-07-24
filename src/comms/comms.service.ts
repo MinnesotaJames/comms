@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Comm } from './comms.entity';
+import { Comm, CommConnection } from './comms.entity';
 import { communicationsData } from './comms.data';
 import { encodeCursor, decodeCursor } from './cursor';
 
@@ -11,21 +11,28 @@ export class CommsService {
     accountIds?: number[],
     commIds?: number[],
     after?: string,
-    first?: number
-  ): Promise<{
-    edges: { cursor: string; node: Comm }[];
-    nodes: Comm[];
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor?: string;
-    };
-  }> {
-    // Filter and sort the data
-    const filteredData = communicationsData
-      .filter(comm => !accountIds || accountIds.includes(comm.accountId))
-      .filter(comm => !commIds || commIds.includes(comm.id));
+    first?: number,
+    sort?: 'ASC' | 'DESC'
+  ): Promise<InstanceType<typeof CommConnection>> {
+    let filteredData = communicationsData;
+    
+    if (accountIds) {
+      filteredData = filteredData.filter(comm => accountIds.includes(comm.accountId));
+    }
 
-    filteredData.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime());
+    if (commIds) {
+      filteredData = filteredData.filter(comm => commIds.includes(comm.id));
+    }
+
+    // Sorting by creationDate
+    if (sort) {
+      filteredData.sort((a, b) => {
+        const dateA = new Date(a.creationDate);
+        const dateB = new Date(b.creationDate);
+        return sort === 'ASC' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      });
+    }
+
 
     // Pagination logic
     let startIndex = 0;

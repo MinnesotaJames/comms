@@ -1,5 +1,5 @@
 import { Args, Query, Resolver, ResolveReference } from '@nestjs/graphql';
-import { Comm, CommConnection } from './comms.entity';
+import { Comm, CommConnection, SortOrder } from './comms.entity';
 import { CommsService } from './comms.service';
 
 @Resolver((of) => Comm)
@@ -11,9 +11,10 @@ export class CommsResolver {
     @Args('accountIds', { type: () => [Number], nullable: true }) accountIds?: number[],
     @Args('commIds', { type: () => [Number], nullable: true }) commIds?: number[],
     @Args('after', { type: () => String, nullable: true }) after?: string,
-    @Args('first', { type: () => Number, nullable: true }) first?: number
+    @Args('first', { type: () => Number, nullable: true }) first?: number,
+    @Args('sort', { type: () => String, nullable: true }) sort?: SortOrder
   ): Promise<InstanceType<typeof CommConnection>> {
-    return this.commsService.getCommunications(accountIds, commIds, after, first);
+    return this.commsService.getCommunications(accountIds, commIds, after, first, sort);
   }
 
   @Query((returns) => Comm)
