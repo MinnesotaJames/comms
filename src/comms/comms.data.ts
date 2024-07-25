@@ -1,6 +1,6 @@
 import { Comm } from './comms.entity';
 
-export const communicationsData = [
+export const communicationsData: Comm[] = [
   // Account ID 1
   { id: 1, accountId: 1, creationDate: new Date('2024-07-17'), message: 'Communication 1', type: 'email' },
   { id: 2, accountId: 1, creationDate: new Date('2024-07-16'), message: 'Communication 2', type: 'email' },
